@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
+import Investments from "./pages/Investments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,8 +22,8 @@ const App = () => (
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="transactions" element={<Transactions />} />
+            <Route path="investments" element={<Investments />} />
             {/* Placeholder routes */}
-            <Route path="investments" element={<ComingSoon title="Investments" />} />
             <Route path="goals" element={<ComingSoon title="Goals" />} />
             <Route path="bills" element={<ComingSoon title="Bills" />} />
             <Route path="ai-chat" element={<ComingSoon title="AI Chat" />} />
