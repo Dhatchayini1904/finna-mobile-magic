@@ -8,13 +8,15 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-  Wallet
+  Wallet,
+  PieChart,
+  BookOpen
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const mainNavItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { title: "Investments", url: "/investments", icon: TrendingUp },
   { title: "Goals", url: "/goals", icon: Target },
