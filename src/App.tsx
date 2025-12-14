@@ -7,6 +7,9 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import Investments from "./pages/Investments";
+import AIChat from "./pages/AIChat";
+import Bills from "./pages/Bills";
+import Goals from "./pages/Goals";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,10 +26,12 @@ const App = () => (
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="transactions" element={<Transactions />} />
             <Route path="investments" element={<Investments />} />
+            <Route path="ai-chat" element={<AIChat />} />
+            <Route path="bills" element={<Bills />} />
+            <Route path="goals" element={<Goals />} />
             {/* Placeholder routes */}
-            <Route path="goals" element={<ComingSoon title="Goals" />} />
-            <Route path="bills" element={<ComingSoon title="Bills" />} />
-            <Route path="ai-chat" element={<ComingSoon title="AI Chat" />} />
+            <Route path="budget" element={<ComingSoon title="Budget" />} />
+            <Route path="learn" element={<ComingSoon title="Learn" />} />
             <Route path="settings" element={<ComingSoon title="Settings" />} />
             <Route path="help" element={<ComingSoon title="Help" />} />
           </Route>
