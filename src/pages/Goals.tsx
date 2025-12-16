@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { GoalsOverview } from "@/components/goals/GoalsOverview";
 import { GoalCard } from "@/components/goals/GoalCard";
 import { GoalWallet } from "@/components/goals/GoalWallet";
-import { Plus, Sparkles } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GoalInsights } from "@/components/goals/GoalInsights";
+import { AIChatWidget } from "@/components/ai/AIChatWidget";
+import { Plus } from "lucide-react";
 
 const goals = [
   {
@@ -62,12 +63,19 @@ const goals = [
   },
 ];
 
+const goalQuickPrompts = [
+  "How to save faster?",
+  "Prioritize my goals",
+  "Am I on track?",
+  "Best savings strategies",
+];
+
 export default function Goals() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Financial Goals</h1>
+          <h1 className="text-2xl font-bold font-display">Financial Goals</h1>
           <p className="text-muted-foreground">Track your savings targets</p>
         </div>
         <Button>
@@ -89,29 +97,15 @@ export default function Goals() {
 
         <div className="space-y-4">
           <GoalWallet />
-
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
-                AI Suggestions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="p-3 rounded-lg bg-background/50">
-                <p className="font-medium text-primary">Boost Emergency Fund</p>
-                <p className="text-muted-foreground mt-1">
-                  Increase monthly contribution by ₹5,000 to reach your target 2 months earlier.
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-background/50">
-                <p className="font-medium text-amber-400">Rebalance Goals</p>
-                <p className="text-muted-foreground mt-1">
-                  Consider reducing travel fund temporarily to prioritize education goal.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <GoalInsights />
+          <div className="h-[400px]">
+            <AIChatWidget
+              context="goal"
+              title="Goals AI Coach"
+              placeholder="Ask about your goals..."
+              quickPrompts={goalQuickPrompts}
+            />
+          </div>
         </div>
       </div>
     </div>
