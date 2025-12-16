@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 const mainNavItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
+  { title: "Budget", url: "/budget", icon: PieChart },
   { title: "Investments", url: "/investments", icon: TrendingUp },
   { title: "Goals", url: "/goals", icon: Target },
   { title: "Bills", url: "/bills", icon: Receipt },
@@ -25,6 +26,7 @@ const mainNavItems = [
 
 const secondaryNavItems = [
   { title: "AI Chat", url: "/ai-chat", icon: MessageSquare },
+  { title: "Learn", url: "/learn", icon: BookOpen },
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Help", url: "/help", icon: HelpCircle },
 ];
