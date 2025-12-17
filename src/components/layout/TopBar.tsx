@@ -1,7 +1,15 @@
-import { Bell, Menu, Search, User } from "lucide-react";
+import { Bell, Menu, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 interface TopBarProps {
   sidebarCollapsed: boolean;
@@ -9,6 +17,16 @@ interface TopBarProps {
 }
 
 export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest';
+
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-lg sticky top-0 z-30">
       <div className="h-full px-6 flex items-center justify-between gap-4">
@@ -46,12 +64,37 @@ export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
           {/* User */}
           <div className="flex items-center gap-3 pl-3 border-l border-border">
             <div className="hidden sm:block text-right">
-              <p className="text-sm font-medium">John Doe</p>
-              <p className="text-xs text-muted-foreground">Premium</p>
+              <p className="text-sm font-medium">{displayName}</p>
+              <p className="text-xs text-muted-foreground">
+                {user ? 'Premium' : 'Guest'}
+              </p>
             </div>
-            <Button variant="ghost" size="icon" className="rounded-full bg-secondary">
-              <User className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full bg-secondary">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {user ? (
+                  <>
+                    <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                      {user.email}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem onClick={() => navigate('/auth')}>
+                    <User className="mr-2 h-4 w-4" />
+                    Sign In
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
