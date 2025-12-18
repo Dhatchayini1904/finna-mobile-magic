@@ -1,163 +1,44 @@
 import { useState, useMemo } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TransactionFilters } from "@/components/transactions/TransactionFilters";
-import { TransactionList, Transaction } from "@/components/transactions/TransactionList";
+import { TransactionList } from "@/components/transactions/TransactionList";
 import { TransactionStats } from "@/components/transactions/TransactionStats";
-
-const mockTransactions: Transaction[] = [
-  {
-    id: "1",
-    description: "Salary Deposit",
-    category: "Income",
-    amount: 85000,
-    type: "income",
-    date: "Today",
-    time: "10:30 AM",
-    icon: "💼",
-    merchant: "TechCorp Inc.",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "2",
-    description: "Netflix Subscription",
-    category: "Entertainment",
-    amount: 649,
-    type: "expense",
-    date: "Today",
-    time: "9:15 AM",
-    icon: "🎬",
-    merchant: "Netflix",
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "3",
-    description: "Swiggy Order",
-    category: "Food & Dining",
-    amount: 450,
-    type: "expense",
-    date: "Today",
-    time: "1:22 PM",
-    icon: "🍕",
-    merchant: "Swiggy",
-    paymentMethod: "UPI",
-  },
-  {
-    id: "4",
-    description: "Grocery Shopping",
-    category: "Shopping",
-    amount: 3850,
-    type: "expense",
-    date: "Yesterday",
-    time: "6:45 PM",
-    icon: "🛒",
-    merchant: "BigBasket",
-    paymentMethod: "Debit Card",
-  },
-  {
-    id: "5",
-    description: "Freelance Payment",
-    category: "Income",
-    amount: 25000,
-    type: "income",
-    date: "Yesterday",
-    time: "3:00 PM",
-    icon: "💻",
-    merchant: "Upwork",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "6",
-    description: "Uber Ride",
-    category: "Transport",
-    amount: 380,
-    type: "expense",
-    date: "Yesterday",
-    time: "9:30 AM",
-    icon: "🚗",
-    merchant: "Uber",
-    paymentMethod: "UPI",
-  },
-  {
-    id: "7",
-    description: "Electricity Bill",
-    category: "Bills",
-    amount: 2450,
-    type: "expense",
-    date: "Dec 7, 2024",
-    time: "11:00 AM",
-    icon: "⚡",
-    merchant: "BESCOM",
-    paymentMethod: "Auto-Pay",
-  },
-  {
-    id: "8",
-    description: "Amazon Purchase",
-    category: "Shopping",
-    amount: 4999,
-    type: "expense",
-    date: "Dec 7, 2024",
-    time: "8:15 PM",
-    icon: "📦",
-    merchant: "Amazon",
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "9",
-    description: "Investment Returns",
-    category: "Income",
-    amount: 5200,
-    type: "income",
-    date: "Dec 6, 2024",
-    time: "10:00 AM",
-    icon: "📈",
-    merchant: "Zerodha",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "10",
-    description: "Gym Membership",
-    category: "Shopping",
-    amount: 2000,
-    type: "expense",
-    date: "Dec 6, 2024",
-    time: "7:00 AM",
-    icon: "🏋️",
-    merchant: "Gold's Gym",
-    paymentMethod: "UPI",
-  },
-  {
-    id: "11",
-    description: "Coffee Meeting",
-    category: "Food & Dining",
-    amount: 650,
-    type: "expense",
-    date: "Dec 5, 2024",
-    time: "4:30 PM",
-    icon: "☕",
-    merchant: "Starbucks",
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "12",
-    description: "Mobile Recharge",
-    category: "Bills",
-    amount: 599,
-    type: "expense",
-    date: "Dec 5, 2024",
-    time: "12:00 PM",
-    icon: "📱",
-    merchant: "Jio",
-    paymentMethod: "UPI",
-  },
-];
+import { TransactionForm } from "@/components/forms/TransactionForm";
+import { useTransactions, Transaction } from "@/hooks/useTransactions";
+import { format, isToday, isYesterday } from "date-fns";
 
 export default function Transactions() {
+  const { transactions, loading, createTransaction, updateTransaction, deleteTransaction, stats } = useTransactions();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+
+  const formatDate = (date: string) => {
+    const d = new Date(date);
+    if (isToday(d)) return "Today";
+    if (isYesterday(d)) return "Yesterday";
+    return format(d, "MMM d, yyyy");
+  };
+
+  const formattedTransactions = useMemo(() => {
+    return transactions.map(t => ({
+      id: t.id,
+      description: t.description,
+      category: t.category,
+      amount: Number(t.amount),
+      type: t.type as "income" | "expense",
+      date: formatDate(t.date),
+      time: t.time || "",
+      icon: t.icon || "📦",
+      merchant: t.merchant,
+      paymentMethod: t.payment_method,
+    }));
+  }, [transactions]);
 
   const filteredTransactions = useMemo(() => {
-    return mockTransactions.filter((transaction) => {
+    return formattedTransactions.filter((transaction) => {
       const matchesSearch = 
         transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         transaction.merchant?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -168,22 +49,28 @@ export default function Transactions() {
 
       return matchesSearch && matchesCategory;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [formattedTransactions, searchQuery, selectedCategory]);
 
-  const stats = useMemo(() => {
-    return filteredTransactions.reduce(
-      (acc, t) => {
-        if (t.type === "income") {
-          acc.totalIncome += t.amount;
-        } else {
-          acc.totalExpenses += t.amount;
-        }
-        acc.count += 1;
-        return acc;
-      },
-      { totalIncome: 0, totalExpenses: 0, count: 0 }
-    );
-  }, [filteredTransactions]);
+  const handleEdit = (transactionId: string) => {
+    const t = transactions.find(tx => tx.id === transactionId);
+    if (t) {
+      setEditingTransaction(t);
+      setFormOpen(true);
+    }
+  };
+
+  const handleDelete = async (transactionId: string) => {
+    await deleteTransaction(transactionId);
+  };
+
+  const handleSubmit = async (data: any) => {
+    if (editingTransaction) {
+      await updateTransaction(editingTransaction.id, data);
+    } else {
+      await createTransaction(data);
+    }
+    setEditingTransaction(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -195,7 +82,7 @@ export default function Transactions() {
             Track and manage all your financial transactions
           </p>
         </div>
-        <Button variant="glow" className="gap-2">
+        <Button variant="glow" className="gap-2" onClick={() => { setEditingTransaction(null); setFormOpen(true); }}>
           <Plus className="h-4 w-4" />
           Add Transaction
         </Button>
@@ -216,13 +103,39 @@ export default function Transactions() {
       />
 
       {/* Transaction List */}
-      {filteredTransactions.length > 0 ? (
-        <TransactionList transactions={filteredTransactions} />
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : filteredTransactions.length > 0 ? (
+        <TransactionList 
+          transactions={filteredTransactions}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ) : transactions.length === 0 ? (
+        <div className="text-center py-12 bg-card/50 rounded-lg border border-border/50">
+          <p className="text-muted-foreground mb-4">No transactions yet. Add your first transaction!</p>
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Transaction
+          </Button>
+        </div>
       ) : (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No transactions found</p>
         </div>
       )}
+
+      <TransactionForm
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingTransaction(null);
+        }}
+        transaction={editingTransaction}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }

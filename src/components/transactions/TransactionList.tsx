@@ -26,6 +26,8 @@ export interface Transaction {
 interface TransactionListProps {
   transactions: Transaction[];
   groupByDate?: boolean;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const formatCurrency = (amount: number) => {
@@ -36,7 +38,7 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-function TransactionItem({ transaction, index }: { transaction: Transaction; index: number }) {
+function TransactionItem({ transaction, index, onEdit, onDelete }: { transaction: Transaction; index: number; onEdit?: (id: string) => void; onDelete?: (id: string) => void }) {
   return (
     <div
       className={cn(
@@ -86,11 +88,11 @@ function TransactionItem({ transaction, index }: { transaction: Transaction; ind
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem className="gap-2">
+            <DropdownMenuItem className="gap-2" onClick={() => onEdit?.(transaction.id)}>
               <Edit className="h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 text-destructive">
+            <DropdownMenuItem className="gap-2 text-destructive" onClick={() => onDelete?.(transaction.id)}>
               <Trash2 className="h-4 w-4" />
               Delete
             </DropdownMenuItem>
@@ -114,7 +116,7 @@ function groupTransactionsByDate(transactions: Transaction[]) {
   return groups;
 }
 
-export function TransactionList({ transactions, groupByDate = true }: TransactionListProps) {
+export function TransactionList({ transactions, groupByDate = true, onEdit, onDelete }: TransactionListProps) {
   if (groupByDate) {
     const grouped = groupTransactionsByDate(transactions);
     let itemIndex = 0;
@@ -148,6 +150,8 @@ export function TransactionList({ transactions, groupByDate = true }: Transactio
                     key={transaction.id} 
                     transaction={transaction} 
                     index={itemIndex++}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
                   />
                 ))}
               </div>
@@ -161,7 +165,11 @@ export function TransactionList({ transactions, groupByDate = true }: Transactio
   return (
     <Card variant="elevated" className="divide-y divide-border/50">
       {transactions.map((transaction, index) => (
-        <TransactionItem key={transaction.id} transaction={transaction} index={index} />
+        <TransactionItem key={transaction.id} transaction={transaction} index={index} onEdit={onEdit} onDelete={onDelete} />
+      ))}
+    </Card>
+  );
+}
       ))}
     </Card>
   );
