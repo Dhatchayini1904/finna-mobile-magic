@@ -13,6 +13,9 @@ interface GoalCardProps {
   category: string;
   icon: string;
   monthlyContribution?: number;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onAddMoney?: () => void;
 }
 
 const categoryColors: Record<string, string> = {
@@ -32,6 +35,9 @@ export function GoalCard({
   category,
   icon,
   monthlyContribution = 0,
+  onEdit,
+  onDelete,
+  onAddMoney,
 }: GoalCardProps) {
   const progress = (current / target) * 100;
   const remaining = target - current;
@@ -89,11 +95,11 @@ export function GoalCard({
         )}
 
         <div className="mt-4 flex gap-2">
-          <Button className="flex-1" size="sm">
+          <Button className="flex-1" size="sm" onClick={onAddMoney}>
             <Plus className="h-4 w-4 mr-1" />
             Add Money
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={onEdit}>
             Details
           </Button>
         </div>
