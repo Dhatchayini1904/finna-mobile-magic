@@ -8,9 +8,11 @@ import { AIChatWidget } from "@/components/ai/AIChatWidget";
 import { StockSearch } from "@/components/investments/StockSearch";
 import { Watchlist } from "@/components/investments/Watchlist";
 import { NewsPanel } from "@/components/investments/NewsPanel";
+import { PortfolioAnalytics } from "@/components/investments/PortfolioAnalytics";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Download, RefreshCw } from "lucide-react";
+import { useState } from "react";
 
 const investmentQuickPrompts = [
   "Best stocks to buy now",
@@ -20,6 +22,8 @@ const investmentQuickPrompts = [
 ];
 
 export default function Investments() {
+  const [activeTab, setActiveTab] = useState("overview");
+
   return (
     <div className="space-y-6 animate-fade-up">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -45,28 +49,47 @@ export default function Investments() {
 
       <PortfolioSummary />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <PerformanceChart />
-          <Holdings />
-          <NewsPanel />
-        </div>
-        <div className="space-y-6">
-          <StockSearch />
-          <Watchlist />
-          <AllocationChart />
-          <AIAdvisor />
-          <InvestmentInsights />
-          <div className="h-[400px]">
-            <AIChatWidget
-              context="investment"
-              title="Investment AI Advisor"
-              placeholder="Ask about investments..."
-              quickPrompts={investmentQuickPrompts}
-            />
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="news">News & Research</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2 space-y-6">
+              <PerformanceChart />
+              <Holdings />
+            </div>
+            <div className="space-y-6">
+              <StockSearch />
+              <Watchlist />
+              <AllocationChart />
+              <AIAdvisor />
+            </div>
           </div>
-        </div>
-      </div>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <PortfolioAnalytics />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <InvestmentInsights />
+            <div className="h-[400px]">
+              <AIChatWidget
+                context="investment"
+                title="Investment AI Advisor"
+                placeholder="Ask about investments..."
+                quickPrompts={investmentQuickPrompts}
+              />
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="news" className="space-y-6">
+          <NewsPanel />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
