@@ -5,7 +5,11 @@ import { Holdings } from "@/components/investments/Holdings";
 import { AIAdvisor } from "@/components/investments/AIAdvisor";
 import { InvestmentInsights } from "@/components/investments/InvestmentInsights";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
+import { StockSearch } from "@/components/investments/StockSearch";
+import { Watchlist } from "@/components/investments/Watchlist";
+import { NewsPanel } from "@/components/investments/NewsPanel";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Download, RefreshCw } from "lucide-react";
 
 const investmentQuickPrompts = [
@@ -45,8 +49,11 @@ export default function Investments() {
         <div className="lg:col-span-2 space-y-6">
           <PerformanceChart />
           <Holdings />
+          <NewsPanel />
         </div>
         <div className="space-y-6">
+          <StockSearch />
+          <Watchlist />
           <AllocationChart />
           <AIAdvisor />
           <InvestmentInsights />
