@@ -170,7 +170,3 @@ export function TransactionList({ transactions, groupByDate = true, onEdit, onDe
     </Card>
   );
 }
-      ))}
-    </Card>
-  );
-}
