@@ -9,6 +9,8 @@ import { StockSearch } from "@/components/investments/StockSearch";
 import { Watchlist } from "@/components/investments/Watchlist";
 import { NewsPanel } from "@/components/investments/NewsPanel";
 import { PortfolioAnalytics } from "@/components/investments/PortfolioAnalytics";
+import { PriceAlerts } from "@/components/investments/PriceAlerts";
+import { DiversificationAdvice } from "@/components/investments/DiversificationAdvice";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Download, RefreshCw } from "lucide-react";
@@ -74,15 +76,19 @@ export default function Investments() {
         <TabsContent value="analytics" className="space-y-6">
           <PortfolioAnalytics />
           <div className="grid gap-6 lg:grid-cols-2">
-            <InvestmentInsights />
-            <div className="h-[400px]">
-              <AIChatWidget
-                context="investment"
-                title="Investment AI Advisor"
-                placeholder="Ask about investments..."
-                quickPrompts={investmentQuickPrompts}
-              />
+            <DiversificationAdvice />
+            <div className="space-y-6">
+              <PriceAlerts />
+              <InvestmentInsights />
             </div>
+          </div>
+          <div className="h-[400px]">
+            <AIChatWidget
+              context="investment"
+              title="Investment AI Advisor"
+              placeholder="Ask about investments..."
+              quickPrompts={investmentQuickPrompts}
+            />
           </div>
         </TabsContent>
 
