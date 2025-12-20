@@ -1,11 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen, Video, Lightbulb } from "lucide-react";
-import { ArticleCard } from "@/components/learn/ArticleCard";
-import { VideoCard } from "@/components/learn/VideoCard";
+import { Search, BookOpen, Video, Lightbulb, Brain } from "lucide-react";
 import { LearnInsights } from "@/components/learn/LearnInsights";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
+import { FinanceArticles } from "@/components/learn/FinanceArticles";
+import { YouTubeVideos } from "@/components/learn/YouTubeVideos";
+import { QuizSection } from "@/components/learn/QuizSection";
 
 const articles = [
   {
@@ -116,6 +117,10 @@ export default function Learn() {
                 <Video className="h-4 w-4" />
                 Videos
               </TabsTrigger>
+              <TabsTrigger value="quizzes" className="gap-2">
+                <Brain className="h-4 w-4" />
+                Quizzes
+              </TabsTrigger>
               <TabsTrigger value="tips" className="gap-2">
                 <Lightbulb className="h-4 w-4" />
                 Quick Tips
@@ -123,17 +128,15 @@ export default function Learn() {
             </TabsList>
 
             <TabsContent value="articles" className="space-y-4">
-              {articles.map((article, index) => (
-                <ArticleCard key={index} {...article} />
-              ))}
+              <FinanceArticles />
             </TabsContent>
 
             <TabsContent value="videos">
-              <div className="grid gap-4 sm:grid-cols-2">
-                {videos.map((video, index) => (
-                  <VideoCard key={index} {...video} />
-                ))}
-              </div>
+              <YouTubeVideos />
+            </TabsContent>
+
+            <TabsContent value="quizzes">
+              <QuizSection />
             </TabsContent>
 
             <TabsContent value="tips">
