@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Bot, User } from "lucide-react";
 
-interface ChatMessageProps {
+export interface ChatMessageProps {
   role: "user" | "assistant";
   content: string;
   timestamp?: string;
@@ -11,33 +11,35 @@ export function ChatMessage({ role, content, timestamp }: ChatMessageProps) {
   const isUser = role === "user";
 
   return (
-    <div className={cn("flex gap-3", isUser && "flex-row-reverse")}>
+    <div className={cn("flex gap-3 animate-fade-in", isUser && "flex-row-reverse")}>
       <div
         className={cn(
-          "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-          isUser ? "bg-primary/20" : "bg-purple-500/20"
+          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-card",
+          isUser 
+            ? "bg-gradient-to-br from-primary to-emerald-600" 
+            : "bg-gradient-to-br from-secondary to-muted"
         )}
       >
         {isUser ? (
-          <User className="h-4 w-4 text-primary" />
+          <User className="h-5 w-5 text-primary-foreground" />
         ) : (
-          <Bot className="h-4 w-4 text-purple-400" />
+          <Bot className="h-5 w-5 text-primary" />
         )}
       </div>
       <div
         className={cn(
-          "max-w-[75%] rounded-2xl px-4 py-3",
+          "max-w-[80%] rounded-2xl px-4 py-3 shadow-card",
           isUser
-            ? "bg-primary text-primary-foreground rounded-br-sm"
-            : "bg-card border border-border/50 rounded-bl-sm"
+            ? "bg-gradient-to-br from-primary to-emerald-600 text-primary-foreground rounded-br-sm"
+            : "glass rounded-bl-sm"
         )}
       >
         <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
         {timestamp && (
           <p
             className={cn(
-              "text-xs mt-1",
-              isUser ? "text-primary-foreground/70" : "text-muted-foreground"
+              "text-xs mt-2 opacity-70",
+              isUser ? "text-primary-foreground" : "text-muted-foreground"
             )}
           >
             {timestamp}
