@@ -5,7 +5,17 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const FINNHUB_API_KEY = Deno.env.get('FINNHUB_API_KEY') || '';
+// Input validation
+const VALID_CATEGORIES = ['general', 'forex', 'crypto', 'merger', 'markets', 'economy', 'technology', 'commodities', 'ipo'];
+const MAX_CATEGORY_LENGTH = 20;
+
+function validateCategory(category: unknown): string {
+  if (typeof category !== 'string') return 'general';
+  const trimmed = category.trim().toLowerCase();
+  if (trimmed.length === 0 || trimmed.length > MAX_CATEGORY_LENGTH) return 'general';
+  if (VALID_CATEGORIES.includes(trimmed)) return trimmed;
+  return 'general';
+}
 
 serve(async (req: Request) => {
   // Handle CORS preflight requests
@@ -14,33 +24,52 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { category } = await req.json();
+    // Parse request body
+    let requestBody: unknown;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const body = requestBody as Record<string, unknown>;
+    const category = validateCategory(body?.category);
     console.log('Fetching news for category:', category);
+
+    const FINNHUB_API_KEY = Deno.env.get('FINNHUB_API_KEY') || '';
 
     // Try to fetch from Finnhub if API key is available
     if (FINNHUB_API_KEY) {
-      const response = await fetch(
-        `https://finnhub.io/api/v1/news?category=${category || 'general'}&token=${FINNHUB_API_KEY}`
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        const articles = data.slice(0, 10).map((item: any, index: number) => ({
-          id: String(index),
-          title: item.headline,
-          summary: item.summary,
-          source: item.source,
-          url: item.url,
-          image: item.image,
-          publishedAt: new Date(item.datetime * 1000).toISOString(),
-          category: item.category || category || 'general',
-          sentiment: getSentiment(item.headline + ' ' + item.summary),
-        }));
-
-        return new Response(
-          JSON.stringify({ articles }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      try {
+        const response = await fetch(
+          `https://finnhub.io/api/v1/news?category=${encodeURIComponent(category)}&token=${FINNHUB_API_KEY}`
         );
+
+        if (response.ok) {
+          const data = await response.json();
+          const articles = data.slice(0, 10).map((item: Record<string, unknown>, index: number) => ({
+            id: String(index),
+            title: item.headline,
+            summary: item.summary,
+            source: item.source,
+            url: item.url,
+            image: item.image,
+            publishedAt: new Date((item.datetime as number) * 1000).toISOString(),
+            category: item.category || category,
+            sentiment: getSentiment(String(item.headline || '') + ' ' + String(item.summary || '')),
+          }));
+
+          return new Response(
+            JSON.stringify({ articles }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        console.warn('Finnhub API returned non-ok response');
+      } catch (fetchError) {
+        console.error('Finnhub fetch failed:', fetchError);
       }
     }
 
@@ -51,10 +80,10 @@ serve(async (req: Request) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching news:', error);
     return new Response(
-      JSON.stringify({ error: error?.message || 'Unknown error', articles: getMockNews('general') }),
+      JSON.stringify({ error: 'Unable to fetch news', articles: getMockNews('general') }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
