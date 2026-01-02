@@ -28,7 +28,7 @@ export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest';
 
   return (
-    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-lg sticky top-0 z-30">
+    <header className="h-16 border-b border-border bg-card/50 backdrop-blur-xl sticky top-0 z-30">
       <div className="h-full px-6 flex items-center justify-between gap-4">
         {/* Left section */}
         <div className="flex items-center gap-4">
@@ -36,7 +36,7 @@ export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
             variant="ghost" 
             size="icon" 
             onClick={onToggleSidebar}
-            className="shrink-0"
+            className="shrink-0 hover:bg-secondary"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -46,7 +46,7 @@ export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               placeholder="Search transactions, investments..."
-              className="w-[300px] lg:w-[400px] pl-10 bg-secondary border-transparent focus:border-primary"
+              className="w-[300px] lg:w-[400px] pl-10 bg-secondary/50 border-border/50 focus:border-primary focus:bg-secondary"
             />
           </div>
         </div>

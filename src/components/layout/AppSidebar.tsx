@@ -80,17 +80,17 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
     <aside 
       className={cn(
         "fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col",
-        collapsed ? "w-[72px]" : "w-[240px]"
+        collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
       {/* Logo */}
       <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-lg shadow-primary/30">
+          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
             <Wallet className="h-5 w-5 text-primary-foreground" />
           </div>
           {!collapsed && (
-            <span className="font-display font-bold text-lg text-foreground">
+            <span className="font-display font-bold text-xl text-foreground tracking-tight">
               FINNAVA
             </span>
           )}
