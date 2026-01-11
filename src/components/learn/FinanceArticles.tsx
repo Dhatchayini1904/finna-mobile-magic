@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, BookOpen, ChevronRight, ExternalLink } from "lucide-react";
+import { Clock, BookOpen, ChevronRight, ExternalLink, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Curated real finance articles
 const articles = [
@@ -72,10 +74,61 @@ const articles = [
   },
 ];
 
-export function FinanceArticles() {
-  const openArticle = (url: string) => {
-    window.open(url, '_blank');
-  };
+interface FinanceArticlesProps {
+  onSelectArticle?: (article: typeof articles[0]) => void;
+  selectedArticle?: typeof articles[0] | null;
+}
+
+export function FinanceArticles({ onSelectArticle, selectedArticle }: FinanceArticlesProps) {
+  // If an article is selected, show the embedded view
+  if (selectedArticle) {
+    return (
+      <div className="space-y-4">
+        <Button 
+          variant="ghost" 
+          onClick={() => onSelectArticle?.(null as any)}
+          className="mb-2"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to articles
+        </Button>
+        
+        <Card className="border-primary/20 bg-card/80 backdrop-blur-sm overflow-hidden">
+          <CardContent className="p-0">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center gap-2 flex-wrap mb-2">
+                <Badge variant="secondary">{selectedArticle.category}</Badge>
+                {selectedArticle.isNew && <Badge className="bg-primary/20 text-primary">New</Badge>}
+                <Badge variant="outline">
+                  <Clock className="h-3 w-3 mr-1" />
+                  {selectedArticle.readTime}
+                </Badge>
+              </div>
+              <h2 className="text-xl font-bold">{selectedArticle.title}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{selectedArticle.description}</p>
+              <div className="flex items-center justify-between mt-4">
+                <span className="text-sm text-muted-foreground">Source: {selectedArticle.source}</span>
+                <Button variant="outline" size="sm" asChild>
+                  <a href={selectedArticle.url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open original
+                  </a>
+                </Button>
+              </div>
+            </div>
+            <div className="h-[500px]">
+              <iframe
+                src={selectedArticle.url}
+                className="w-full h-full"
+                title={selectedArticle.title}
+                sandbox="allow-scripts allow-same-origin allow-popups"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -83,7 +136,7 @@ export function FinanceArticles() {
         <Card 
           key={index}
           className="bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden hover:border-primary/30 transition-all cursor-pointer group"
-          onClick={() => openArticle(article.url)}
+          onClick={() => onSelectArticle?.(article)}
         >
           <CardContent className="p-4">
             <div className="flex items-start justify-between gap-3">

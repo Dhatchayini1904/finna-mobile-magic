@@ -184,28 +184,49 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string | null
+          financial_goals: Json | null
           full_name: string | null
           id: string
+          monthly_income: number | null
+          occupation: string | null
+          onboarding_completed: boolean | null
+          preferred_language: string | null
+          risk_profile: string | null
           updated_at: string
           user_id: string
+          voice_enabled: boolean | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          financial_goals?: Json | null
           full_name?: string | null
           id?: string
+          monthly_income?: number | null
+          occupation?: string | null
+          onboarding_completed?: boolean | null
+          preferred_language?: string | null
+          risk_profile?: string | null
           updated_at?: string
           user_id: string
+          voice_enabled?: boolean | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          financial_goals?: Json | null
           full_name?: string | null
           id?: string
+          monthly_income?: number | null
+          occupation?: string | null
+          onboarding_completed?: boolean | null
+          preferred_language?: string | null
+          risk_profile?: string | null
           updated_at?: string
           user_id?: string
+          voice_enabled?: boolean | null
         }
         Relationships: []
       }

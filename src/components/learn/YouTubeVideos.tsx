@@ -1,6 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, ExternalLink, Clock, Eye } from "lucide-react";
+import { Play, ExternalLink, Eye, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Curated finance YouTube videos (real video IDs)
 const youtubeVideos = [
@@ -60,10 +62,63 @@ const youtubeVideos = [
   },
 ];
 
-export function YouTubeVideos() {
-  const openVideo = (videoId: string) => {
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
-  };
+interface YouTubeVideosProps {
+  onSelectVideo?: (video: typeof youtubeVideos[0]) => void;
+  selectedVideo?: typeof youtubeVideos[0] | null;
+}
+
+export function YouTubeVideos({ onSelectVideo, selectedVideo }: YouTubeVideosProps) {
+  // If a video is selected, show the embedded player
+  if (selectedVideo) {
+    return (
+      <div className="space-y-4">
+        <Button 
+          variant="ghost" 
+          onClick={() => onSelectVideo?.(null as any)}
+          className="mb-2"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to videos
+        </Button>
+        
+        <Card className="border-primary/20 bg-card/80 backdrop-blur-sm overflow-hidden">
+          <CardContent className="p-0">
+            <div className="aspect-video">
+              <iframe
+                src={`https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1`}
+                className="w-full h-full"
+                title={selectedVideo.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <div className="p-4 space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="secondary">{selectedVideo.category}</Badge>
+                <Badge variant="outline">{selectedVideo.duration}</Badge>
+              </div>
+              <h2 className="text-xl font-bold">{selectedVideo.title}</h2>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span>{selectedVideo.channel}</span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
+                    {selectedVideo.views} views
+                  </span>
+                </div>
+                <Button variant="outline" size="sm" asChild>
+                  <a href={`https://www.youtube.com/watch?v=${selectedVideo.id}`} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open on YouTube
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -84,7 +139,7 @@ export function YouTubeVideos() {
           <Card 
             key={video.id} 
             className="bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden hover:border-primary/30 transition-all cursor-pointer group"
-            onClick={() => openVideo(video.id)}
+            onClick={() => onSelectVideo?.(video)}
           >
             <div className="relative aspect-video">
               <img 
