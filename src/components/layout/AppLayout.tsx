@@ -1,23 +1,40 @@
 import { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { TopBar } from "./TopBar";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
 import { Loader2 } from "lucide-react";
 
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading, refetch } = useUserProfile();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       navigate('/auth');
     }
-  }, [user, loading, navigate]);
+  }, [user, authLoading, navigate]);
 
-  if (loading) {
+  useEffect(() => {
+    // Show onboarding if user is logged in but hasn't completed it
+    if (user && profile && !profile.onboarding_completed) {
+      setShowOnboarding(true);
+    }
+  }, [user, profile]);
+
+  const handleOnboardingComplete = async () => {
+    setShowOnboarding(false);
+    await refetch();
+  };
+
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -27,6 +44,11 @@ export function AppLayout() {
 
   if (!user) {
     return null;
+  }
+
+  // Show onboarding flow
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
   }
 
   return (

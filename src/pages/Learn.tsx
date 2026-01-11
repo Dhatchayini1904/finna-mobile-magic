@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -7,68 +8,7 @@ import { AIChatWidget } from "@/components/ai/AIChatWidget";
 import { FinanceArticles } from "@/components/learn/FinanceArticles";
 import { YouTubeVideos } from "@/components/learn/YouTubeVideos";
 import { QuizSection } from "@/components/learn/QuizSection";
-
-const articles = [
-  {
-    title: "Understanding Mutual Funds: A Beginner's Complete Guide",
-    description: "Learn the basics of mutual funds, types, and how to start investing with just ₹500",
-    category: "Investing",
-    readTime: "8 min read",
-    isNew: true,
-  },
-  {
-    title: "How to Create Your First Budget Using the 50/30/20 Rule",
-    description: "A simple framework to manage your money and start saving effectively",
-    category: "Budgeting",
-    readTime: "5 min read",
-  },
-  {
-    title: "Tax Saving Strategies for Salaried Employees in India",
-    description: "Maximize your take-home salary with these legal tax saving instruments",
-    category: "Tax",
-    readTime: "10 min read",
-  },
-  {
-    title: "SIP vs Lump Sum: Which Investment Strategy is Better?",
-    description: "Understand when to use SIP and when lump sum investing makes more sense",
-    category: "Investing",
-    readTime: "6 min read",
-  },
-  {
-    title: "Building an Emergency Fund: Step-by-Step Guide",
-    description: "Why you need one and how to build it without affecting your lifestyle",
-    category: "Savings",
-    readTime: "4 min read",
-    isNew: true,
-  },
-];
-
-const videos = [
-  {
-    title: "Stock Market Basics for Beginners",
-    duration: "15:32",
-    category: "Stocks",
-    views: "125K",
-  },
-  {
-    title: "How to Read Financial Statements",
-    duration: "22:15",
-    category: "Analysis",
-    views: "89K",
-  },
-  {
-    title: "Understanding Inflation and Your Money",
-    duration: "10:45",
-    category: "Economics",
-    views: "67K",
-  },
-  {
-    title: "Credit Score Explained: How to Improve Yours",
-    duration: "12:20",
-    category: "Credit",
-    views: "156K",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const categories = ["All", "Investing", "Budgeting", "Tax", "Savings", "Stocks"];
 
@@ -79,18 +19,61 @@ const learnQuickPrompts = [
   "How to start investing?",
 ];
 
+type Article = {
+  title: string;
+  description: string;
+  category: string;
+  readTime: string;
+  source: string;
+  url: string;
+  isNew?: boolean;
+} | null;
+
+interface VideoItem {
+  id: string;
+  title: string;
+  channel: string;
+  duration: string;
+  views: string;
+  category: string;
+  thumbnail: string;
+}
+
 export default function Learn() {
+  const { t, language } = useLanguage();
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
+
+  const handleSelectArticle = (article: Article | null) => {
+    setSelectedArticle(article);
+    setSelectedVideo(null);
+  };
+
+  const handleSelectVideo = (video: VideoItem | null) => {
+    setSelectedVideo(video);
+    setSelectedArticle(null);
+  };
+
   return (
     <div className="space-y-6 animate-fade-up">
       <div>
-        <h1 className="text-2xl font-bold font-display">Learn</h1>
-        <p className="text-muted-foreground">Financial education to help you make smarter decisions</p>
+        <h1 className="text-2xl font-bold font-display">
+          {language === 'ta' ? 'கற்றுக்கொள்ளுங்கள்' : 'Learn'}
+        </h1>
+        <p className="text-muted-foreground">
+          {language === 'ta' 
+            ? 'சிறந்த முடிவுகள் எடுக்க நிதி கல்வி' 
+            : 'Financial education to help you make smarter decisions'}
+        </p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search articles, videos, topics..." className="pl-9" />
+          <Input 
+            placeholder={language === 'ta' ? 'கட்டுரைகள், வீடியோக்கள் தேடு...' : 'Search articles, videos, topics...'} 
+            className="pl-9" 
+          />
         </div>
         <div className="flex gap-2 flex-wrap">
           {categories.map((cat) => (
@@ -109,30 +92,36 @@ export default function Learn() {
         <div className="lg:col-span-2">
           <Tabs defaultValue="articles" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="articles" className="gap-2">
+              <TabsTrigger value="articles" className="gap-2" onClick={() => { setSelectedArticle(null); setSelectedVideo(null); }}>
                 <BookOpen className="h-4 w-4" />
-                Articles
+                {language === 'ta' ? 'கட்டுரைகள்' : 'Articles'}
               </TabsTrigger>
-              <TabsTrigger value="videos" className="gap-2">
+              <TabsTrigger value="videos" className="gap-2" onClick={() => { setSelectedArticle(null); setSelectedVideo(null); }}>
                 <Video className="h-4 w-4" />
-                Videos
+                {language === 'ta' ? 'வீடியோக்கள்' : 'Videos'}
               </TabsTrigger>
-              <TabsTrigger value="quizzes" className="gap-2">
+              <TabsTrigger value="quizzes" className="gap-2" onClick={() => { setSelectedArticle(null); setSelectedVideo(null); }}>
                 <Brain className="h-4 w-4" />
-                Quizzes
+                {language === 'ta' ? 'வினாடி வினா' : 'Quizzes'}
               </TabsTrigger>
-              <TabsTrigger value="tips" className="gap-2">
+              <TabsTrigger value="tips" className="gap-2" onClick={() => { setSelectedArticle(null); setSelectedVideo(null); }}>
                 <Lightbulb className="h-4 w-4" />
-                Quick Tips
+                {language === 'ta' ? 'குறிப்புகள்' : 'Quick Tips'}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="articles" className="space-y-4">
-              <FinanceArticles />
+              <FinanceArticles 
+                onSelectArticle={handleSelectArticle}
+                selectedArticle={selectedArticle}
+              />
             </TabsContent>
 
             <TabsContent value="videos">
-              <YouTubeVideos />
+              <YouTubeVideos 
+                onSelectVideo={handleSelectVideo}
+                selectedVideo={selectedVideo}
+              />
             </TabsContent>
 
             <TabsContent value="quizzes">
@@ -150,8 +139,8 @@ export default function Learn() {
           <div className="h-[400px]">
             <AIChatWidget
               context="learn"
-              title="Financial Tutor AI"
-              placeholder="Ask any finance question..."
+              title={language === 'ta' ? 'நிதி ஆசிரியர் AI' : 'Financial Tutor AI'}
+              placeholder={language === 'ta' ? 'நிதி கேள்வி கேளுங்கள்...' : 'Ask any finance question...'}
               quickPrompts={learnQuickPrompts}
             />
           </div>

@@ -14,6 +14,7 @@ import Bills from "./pages/Bills";
 import Goals from "./pages/Goals";
 import Budget from "./pages/Budget";
 import Learn from "./pages/Learn";
+import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -39,7 +40,7 @@ const App = () => (
                 <Route path="goals" element={<Goals />} />
                 <Route path="budget" element={<Budget />} />
                 <Route path="learn" element={<Learn />} />
-                <Route path="settings" element={<ComingSoon title="Settings" />} />
+                <Route path="settings" element={<Settings />} />
                 <Route path="help" element={<ComingSoon title="Help" />} />
               </Route>
               <Route path="*" element={<NotFound />} />
