@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, BookOpen, Video, Lightbulb, Brain } from "lucide-react";
 import { LearnInsights } from "@/components/learn/LearnInsights";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
-import { FinanceArticles } from "@/components/learn/FinanceArticles";
+import { FinanceArticles, ArticleType } from "@/components/learn/FinanceArticles";
 import { YouTubeVideos } from "@/components/learn/YouTubeVideos";
 import { QuizSection } from "@/components/learn/QuizSection";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,16 +19,6 @@ const learnQuickPrompts = [
   "How to start investing?",
 ];
 
-type Article = {
-  title: string;
-  description: string;
-  category: string;
-  readTime: string;
-  source: string;
-  url: string;
-  isNew?: boolean;
-} | null;
-
 interface VideoItem {
   id: string;
   title: string;
@@ -41,10 +31,10 @@ interface VideoItem {
 
 export default function Learn() {
   const { t, language } = useLanguage();
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
-  const handleSelectArticle = (article: Article | null) => {
+  const handleSelectArticle = (article: ArticleType | null) => {
     setSelectedArticle(article);
     setSelectedVideo(null);
   };

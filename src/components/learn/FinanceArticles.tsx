@@ -74,9 +74,19 @@ const articles = [
   },
 ];
 
+export interface ArticleType {
+  title: string;
+  description: string;
+  category: string;
+  readTime: string;
+  source: string;
+  url: string;
+  isNew?: boolean;
+}
+
 interface FinanceArticlesProps {
-  onSelectArticle?: (article: typeof articles[0]) => void;
-  selectedArticle?: typeof articles[0] | null;
+  onSelectArticle?: (article: ArticleType | null) => void;
+  selectedArticle?: ArticleType | null;
 }
 
 export function FinanceArticles({ onSelectArticle, selectedArticle }: FinanceArticlesProps) {
