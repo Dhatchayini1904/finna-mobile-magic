@@ -24,7 +24,6 @@ serve(async (req: Request) => {
   }
 
   try {
-    // Parse request body
     let requestBody: unknown;
     try {
       requestBody = await req.json();
@@ -37,43 +36,59 @@ serve(async (req: Request) => {
 
     const body = requestBody as Record<string, unknown>;
     const category = validateCategory(body?.category);
-    console.log('Fetching news for category:', category);
+    console.log('Fetching Indian market news for category:', category);
 
-    const FINNHUB_API_KEY = Deno.env.get('FINNHUB_API_KEY') || '';
+    // Map Finna app categories to appropriate Indian market RSS Feeds (Moneycontrol / Economic Times)
+    const rssFeeds: Record<string, string> = {
+      'markets': 'https://www.moneycontrol.com/rss/marketreports.xml',
+      'economy': 'https://www.moneycontrol.com/rss/economy.xml',
+      'technology': 'https://www.moneycontrol.com/rss/technology.xml',
+      'commodities': 'https://www.moneycontrol.com/rss/commodities.xml',
+      'crypto': 'https://www.moneycontrol.com/rss/cryptocurrency.xml',
+      'ipo': 'https://www.moneycontrol.com/rss/iponews.xml',
+      'general': 'https://www.moneycontrol.com/rss/business.xml',
+    };
 
-    // Try to fetch from Finnhub if API key is available
-    if (FINNHUB_API_KEY) {
-      try {
-        const response = await fetch(
-          `https://finnhub.io/api/v1/news?category=${encodeURIComponent(category)}&token=${FINNHUB_API_KEY}`
-        );
+    const targetRssUrl = rssFeeds[category] || rssFeeds['general'];
 
-        if (response.ok) {
-          const data = await response.json();
-          const articles = data.slice(0, 10).map((item: Record<string, unknown>, index: number) => ({
-            id: String(index),
-            title: item.headline,
-            summary: item.summary,
-            source: item.source,
-            url: item.url,
-            image: item.image,
-            publishedAt: new Date((item.datetime as number) * 1000).toISOString(),
-            category: item.category || category,
-            sentiment: getSentiment(String(item.headline || '') + ' ' + String(item.summary || '')),
-          }));
+    try {
+      // Use rss2json free API to convert XML feed into easily parsable JSON
+      const rss2jsonUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(targetRssUrl)}&api_key=`;
+      const response = await fetch(rss2jsonUrl);
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 'ok' && data.items) {
+          const articles = data.items.slice(0, 10).map((item: any, index: number) => {
+            // Moneycontrol description often has gross HTML tracking tags, let's strip them quickly
+            const cleanSummary = (item.description || '').replace(/<[^>]*>?/gm, '').substring(0, 150) + '...';
+
+            return {
+              id: `${category}-${index}`,
+              title: item.title,
+              summary: cleanSummary,
+              source: data.feed.title || 'Moneycontrol India',
+              url: item.link,
+              // Use RSS thumbnail if available, otherwise default to a financial splash
+              image: item.thumbnail || "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400",
+              publishedAt: new Date(item.pubDate || Date.now()).toISOString(),
+              category: category,
+              sentiment: getSentiment(item.title + ' ' + cleanSummary),
+            };
+          });
 
           return new Response(
             JSON.stringify({ articles }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        console.warn('Finnhub API returned non-ok response');
-      } catch (fetchError) {
-        console.error('Finnhub fetch failed:', fetchError);
       }
+      console.warn('RSS API returned non-ok response or failed parsing');
+    } catch (fetchError) {
+      console.error('RSS fetch failed:', fetchError);
     }
 
-    // Fallback to mock data
+    // Fallback to mock data if API fails
     const mockArticles = getMockNews(category);
     return new Response(
       JSON.stringify({ articles: mockArticles }),
@@ -91,24 +106,25 @@ serve(async (req: Request) => {
 
 function getSentiment(text: string): 'positive' | 'negative' | 'neutral' {
   const lowerText = text.toLowerCase();
-  const positiveWords = ['gain', 'rise', 'surge', 'rally', 'growth', 'profit', 'boost', 'record', 'success'];
-  const negativeWords = ['fall', 'drop', 'decline', 'loss', 'crash', 'concern', 'risk', 'fear', 'worry'];
-  
+  const positiveWords = ['gain', 'rise', 'surge', 'rally', 'growth', 'profit', 'boost', 'record', 'success', 'up', 'jumps', 'soars'];
+  const negativeWords = ['fall', 'drop', 'decline', 'loss', 'crash', 'concern', 'risk', 'fear', 'worry', 'down', 'slips', 'plunges'];
+
   const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
   const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
-  
+
   if (positiveCount > negativeCount) return 'positive';
   if (negativeCount > positiveCount) return 'negative';
   return 'neutral';
 }
 
 function getMockNews(category: string) {
+  // Indian market specific mock data
   return [
     {
       id: '1',
-      title: 'Markets Rally on Strong Earnings Reports',
-      summary: 'Major indices posted gains as tech companies reported better-than-expected quarterly results, boosting investor confidence across global markets.',
-      source: 'Financial Times',
+      title: 'Sensex, Nifty hit lifetime highs as IT, banking shares rally',
+      summary: 'Indian benchmark equity indices hit fresh lifetime highs today, driven by a strong rally in IT and banking heavyweights amid positive global cues.',
+      source: 'Moneycontrol',
       url: '#',
       image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400',
       publishedAt: new Date().toISOString(),
@@ -117,8 +133,8 @@ function getMockNews(category: string) {
     },
     {
       id: '2',
-      title: 'Central Bank Holds Interest Rates Steady',
-      summary: 'The central bank kept key rates unchanged in its latest policy meeting, citing balanced inflation outlook and economic stability.',
+      title: 'RBI Monetary Policy: Repo rate kept unchanged at 6.5%',
+      summary: 'The Monetary Policy Committee (MPC) of the Reserve Bank of India decided to keep the repo rate unchanged, continuing its stance on withdrawal of accommodation.',
       source: 'Economic Times',
       url: '#',
       image: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400',
@@ -128,9 +144,9 @@ function getMockNews(category: string) {
     },
     {
       id: '3',
-      title: 'Tech Stocks Lead Market Recovery',
-      summary: 'Technology sector outperforms broader market as investors rotate back into growth stocks amid falling bond yields.',
-      source: 'Bloomberg',
+      title: 'TCS, Infosys announce solid Q3 results, guiding for better FY25',
+      summary: 'Top Indian IT firms have announced better than expected third-quarter results, indicating a stabilization in discretionary tech spending in the US.',
+      source: 'Mint',
       url: '#',
       image: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=400',
       publishedAt: new Date(Date.now() - 7200000).toISOString(),
@@ -139,25 +155,25 @@ function getMockNews(category: string) {
     },
     {
       id: '4',
-      title: 'Oil Prices Surge on Supply Concerns',
-      summary: 'Crude oil prices jumped on supply disruption concerns, raising questions about energy costs and inflation.',
-      source: 'Reuters',
+      title: 'Gold prices in India touch new records amid global shifts',
+      summary: 'Domestically, 24-carat gold reached consecutive record highs, as safe-haven buying increased significantly following international market turbulence.',
+      source: 'Business Standard',
       url: '#',
       image: 'https://images.unsplash.com/photo-1474631245212-32dc3c8310c6?w=400',
       publishedAt: new Date(Date.now() - 10800000).toISOString(),
       category: 'commodities',
-      sentiment: 'negative',
+      sentiment: 'positive',
     },
     {
       id: '5',
-      title: 'Investors Eye New IPO Opportunities',
-      summary: 'Several highly anticipated initial public offerings are set to hit the market this quarter, generating investor excitement.',
-      source: 'Market Watch',
+      title: 'Upcoming IPOs this week: Four SME issues to hit Street',
+      summary: 'The primary market looks robust as four small and medium enterprises (SMEs) prepare to launch their initial public offerings in the Indian market this week.',
+      source: 'NDTV Profit',
       url: '#',
       image: 'https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?w=400',
       publishedAt: new Date(Date.now() - 14400000).toISOString(),
       category: 'ipo',
-      sentiment: 'positive',
+      sentiment: 'neutral',
     },
   ];
 }
