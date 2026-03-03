@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Message = {
   role: "user" | "assistant";
@@ -34,17 +35,35 @@ export function useAIChat(context: AIContext = "general") {
     };
 
     try {
+      // Get the current user's session token
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      
+      if (!token) {
+        throw new Error("Please log in to use the AI assistant");
+      }
+
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({ messages: [...messages, userMsg], context }),
       });
 
       if (!resp.ok) {
         const errorData = await resp.json().catch(() => ({}));
+        if (resp.status === 401) {
+          throw new Error("Session expired. Please log out and log back in.");
+        }
+        if (resp.status === 429) {
+          throw new Error("Too many requests. Please wait a moment and try again.");
+        }
+        if (resp.status === 402) {
+          throw new Error("AI service temporarily unavailable. Please try again later.");
+        }
         throw new Error(errorData.error || `Request failed with status ${resp.status}`);
       }
 
