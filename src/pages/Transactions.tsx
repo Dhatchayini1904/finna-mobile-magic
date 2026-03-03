@@ -6,10 +6,16 @@ import { TransactionList } from "@/components/transactions/TransactionList";
 import { TransactionStats } from "@/components/transactions/TransactionStats";
 import { TransactionForm } from "@/components/forms/TransactionForm";
 import { useTransactions, Transaction } from "@/hooks/useTransactions";
+import { FraudAnalysisView } from "@/components/transactions/FraudAnalysisView";
 import { format, isToday, isYesterday } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { ShieldCheck } from "lucide-react";
 
 export default function Transactions() {
   const { transactions, loading, createTransaction, updateTransaction, deleteTransaction, stats } = useTransactions();
+  const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState("history");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [formOpen, setFormOpen] = useState(false);
@@ -39,12 +45,12 @@ export default function Transactions() {
 
   const filteredTransactions = useMemo(() => {
     return formattedTransactions.filter((transaction) => {
-      const matchesSearch = 
+      const matchesSearch =
         transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         transaction.merchant?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         transaction.category.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesCategory = 
+
+      const matchesCategory =
         selectedCategory === "All" || transaction.category === selectedCategory;
 
       return matchesSearch && matchesCategory;
@@ -89,43 +95,61 @@ export default function Transactions() {
       </div>
 
       {/* Stats */}
-      <TransactionStats 
+      <TransactionStats
         totalIncome={stats.totalIncome}
         totalExpenses={stats.totalExpenses}
         transactionCount={stats.count}
       />
 
-      {/* Filters */}
-      <TransactionFilters
-        onSearch={setSearchQuery}
-        onCategoryChange={setSelectedCategory}
-        selectedCategory={selectedCategory}
-      />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="bg-secondary/30 p-1 h-12 rounded-xl">
+          <TabsTrigger value="history" className="px-6 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white uppercase font-black text-[10px] tracking-widest">
+            {t('history') || 'History'}
+          </TabsTrigger>
+          <TabsTrigger value="security" className="px-6 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white uppercase font-black text-[10px] tracking-widest flex gap-2">
+            <ShieldCheck className="h-3 w-3" />
+            Security Analysis
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Transaction List */}
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      ) : filteredTransactions.length > 0 ? (
-        <TransactionList 
-          transactions={filteredTransactions}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      ) : transactions.length === 0 ? (
-        <div className="text-center py-12 bg-card/50 rounded-lg border border-border/50">
-          <p className="text-muted-foreground mb-4">No transactions yet. Add your first transaction!</p>
-          <Button onClick={() => setFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Transaction
-          </Button>
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">No transactions found</p>
-        </div>
-      )}
+        <TabsContent value="history" className="space-y-6">
+          {/* Filters */}
+          <TransactionFilters
+            onSearch={setSearchQuery}
+            onCategoryChange={setSelectedCategory}
+            selectedCategory={selectedCategory}
+          />
+
+          {/* Transaction List */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : filteredTransactions.length > 0 ? (
+            <TransactionList
+              transactions={filteredTransactions}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ) : transactions.length === 0 ? (
+            <div className="text-center py-12 bg-card/50 rounded-lg border border-border/50">
+              <p className="text-muted-foreground mb-4">No transactions yet. Add your first transaction!</p>
+              <Button onClick={() => setFormOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Transaction
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No transactions found</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="security">
+          <FraudAnalysisView />
+        </TabsContent>
+      </Tabs>
 
       <TransactionForm
         open={formOpen}

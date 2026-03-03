@@ -18,7 +18,7 @@ export function ChatMessage({ role, content, timestamp }: ChatMessageProps) {
         className={cn(
           "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-card",
           isUser
-            ? "bg-gradient-to-br from-primary to-emerald-600"
+            ? "bg-gradient-to-br from-primary to-blue-700"
             : "bg-gradient-to-br from-secondary to-muted"
         )}
       >
@@ -32,7 +32,7 @@ export function ChatMessage({ role, content, timestamp }: ChatMessageProps) {
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 shadow-card",
           isUser
-            ? "bg-gradient-to-br from-primary to-emerald-600 text-primary-foreground rounded-br-sm"
+            ? "bg-gradient-to-br from-primary to-blue-700 text-primary-foreground rounded-br-sm"
             : "glass rounded-bl-sm"
         )}
       >

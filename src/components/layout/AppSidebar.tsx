@@ -8,117 +8,78 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-  Wallet,
   PieChart,
-  BookOpen
+  BookOpen,
+  Newspaper
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 
-const mainNavItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
-  { title: "Budget", url: "/budget", icon: PieChart },
-  { title: "Investments", url: "/investments", icon: TrendingUp },
-  { title: "Goals", url: "/goals", icon: Target },
-  { title: "Bills", url: "/bills", icon: Receipt },
-];
+export function AppSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+  const { t } = useLanguage();
+  const { signOut } = useAuth();
 
-const secondaryNavItems = [
-  { title: "AI Chat", url: "/ai-chat", icon: MessageSquare },
-  { title: "Learn", url: "/learn", icon: BookOpen },
-  { title: "Settings", url: "/settings", icon: Settings },
-  { title: "Help", url: "/help", icon: HelpCircle },
-];
+  const mainNavItems = [
+    { title: t('dashboard'), url: "/dashboard", icon: LayoutDashboard },
+    { title: t('transactions'), url: "/transactions", icon: ArrowLeftRight },
+    { title: t('budget'), url: "/budget", icon: PieChart },
+    { title: t('investments'), url: "/investments", icon: TrendingUp },
+    { title: t('goals'), url: "/goals", icon: Target },
+  ];
 
-interface NavItemProps {
-  item: { title: string; url: string; icon: React.ElementType };
-  collapsed: boolean;
-}
+  const secondaryNavItems = [
+    { title: t('news'), url: "/news", icon: Newspaper },
+    { title: t('aiChat'), url: "/ai-chat", icon: MessageSquare },
+    { title: t('learn'), url: "/learn", icon: BookOpen },
+    { title: t('settings'), url: "/settings", icon: Settings },
+    { title: t('help'), url: "/help", icon: HelpCircle },
+  ];
 
-function NavItem({ item, collapsed }: NavItemProps) {
-  const location = useLocation();
-  const isActive = location.pathname === item.url;
-  const Icon = item.icon;
-
-  return (
-    <NavLink
-      to={item.url}
-      className={cn(
-        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
-        isActive
-          ? "bg-primary/10 text-primary"
-          : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-      )}
-    >
-      <Icon className={cn(
-        "h-5 w-5 shrink-0 transition-colors",
-        isActive ? "text-primary" : "group-hover:text-foreground"
-      )} />
-      {!collapsed && (
-        <span className={cn(
-          "font-medium text-sm transition-opacity",
-          isActive && "text-primary"
-        )}>
-          {item.title}
-        </span>
-      )}
-      {isActive && !collapsed && (
-        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-pulse-glow" />
-      )}
-    </NavLink>
-  );
-}
-
-interface AppSidebarProps {
-  collapsed: boolean;
-  onToggle: () => void;
-}
-
-export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col",
+        "fixed left-0 top-0 z-40 h-screen bg-sidebar/80 backdrop-blur-xl border-r border-sidebar-border transition-all duration-300 flex flex-col shadow-xl",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow overflow-hidden shrink-0 bg-primary/10">
-            <img src="/icon.png" alt="FINNAVA Logo" className="w-full h-full object-cover" />
+      <div className="h-16 flex items-center px-4 border-b border-sidebar-border bg-background/20">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow shrink-0 bg-primary/20 border border-primary/20">
+            <img src="/icon.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           {!collapsed && (
-            <span className="font-display font-bold text-xl text-foreground tracking-tight">
+            <span className="font-display font-black text-xl text-primary tracking-tighter animate-fade-in">
               FINNAVA
             </span>
           )}
         </div>
       </div>
 
-      {/* Main Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      {/* Navigation */}
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
         <div className="space-y-1">
           {!collapsed && (
-            <span className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Main
+            <span className="px-4 text-[10px] font-black text-primary/50 uppercase tracking-[0.2em]">
+              {t('main')}
             </span>
           )}
-          <div className="space-y-0.5 mt-2">
+          <div className="space-y-1 mt-3">
             {mainNavItems.map((item) => (
               <NavItem key={item.url} item={item} collapsed={collapsed} />
             ))}
           </div>
         </div>
 
-        <div className="pt-6 space-y-1">
+        <div className="pt-8 space-y-1">
           {!collapsed && (
-            <span className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Tools
+            <span className="px-4 text-[10px] font-black text-primary/50 uppercase tracking-[0.2em]">
+              {t('tools')}
             </span>
           )}
-          <div className="space-y-0.5 mt-2">
+          <div className="space-y-1 mt-3">
             {secondaryNavItems.map((item) => (
               <NavItem key={item.url} item={item} collapsed={collapsed} />
             ))}
@@ -127,17 +88,49 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-sidebar-border">
+      <div className="p-3 border-t border-sidebar-border bg-background/10">
         <button
+          onClick={() => signOut()}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200",
-            "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            "flex items-center gap-4 px-4 py-3 rounded-xl w-full transition-all duration-300 font-bold text-sm",
+            "text-muted-foreground hover:text-white hover:bg-destructive shadow-sm hover:shadow-destructive/40"
           )}
         >
           <LogOut className="h-5 w-5 shrink-0" />
-          {!collapsed && <span className="font-medium text-sm">Logout</span>}
+          {!collapsed && <span className="animate-fade-in">{t('logout')}</span>}
         </button>
       </div>
     </aside>
+  );
+}
+
+function NavItem({ item, collapsed }: { item: any; collapsed: boolean }) {
+  const location = useLocation();
+  const isActive = location.pathname === item.url;
+  const Icon = item.icon;
+
+  return (
+    <NavLink
+      to={item.url}
+      className={cn(
+        "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group relative",
+        isActive
+          ? "bg-primary text-white shadow-lg shadow-primary/30"
+          : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+      )}
+    >
+      <Icon className={cn(
+        "h-5 w-5 shrink-0 transition-transform duration-300",
+        isActive ? "scale-110" : "group-hover:scale-110"
+      )} />
+      {!collapsed && (
+        <span className="font-bold text-sm transition-opacity truncate animate-fade-in">
+          {item.title}
+        </span>
+      )}
+      {isActive && !collapsed && (
+        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_10px_white] animate-pulse" />
+      )}
+    </NavLink>
   );
 }

@@ -21,11 +21,11 @@ export interface Holding {
 }
 
 const staticHoldings = [
-  { symbol: "AAPL", name: "Apple Inc.", quantity: 25, avgPrice: 165, type: "stock" },
-  { symbol: "GOOGL", name: "Alphabet Inc.", quantity: 10, avgPrice: 135, type: "stock" },
-  { symbol: "MSFT", name: "Microsoft Corporation", quantity: 15, avgPrice: 340, type: "stock" },
-  { symbol: "NVDA", name: "NVIDIA Corporation", quantity: 8, avgPrice: 450, type: "stock" },
-  { symbol: "AMZN", name: "Amazon.com Inc.", quantity: 12, avgPrice: 155, type: "stock" },
+  { symbol: "RI", name: "Reliance Industries", quantity: 15, avgPrice: 2800, type: "stock" },
+  { symbol: "TCS", name: "Tata Consultancy Services", quantity: 5, avgPrice: 3900, type: "stock" },
+  { symbol: "HDF01", name: "HDFC Bank", quantity: 20, avgPrice: 1600, type: "stock" },
+  { symbol: "IT", name: "Infosys Ltd", quantity: 10, avgPrice: 1500, type: "stock" },
+  { symbol: "SBI", name: "State Bank of India", quantity: 30, avgPrice: 800, type: "stock" },
 ];
 
 const typeColors: Record<string, string> = {
@@ -51,7 +51,7 @@ export function Holdings() {
     setIsRefreshing(true);
     const symbols = staticHoldings.map(h => h.symbol);
     const quotes = await getBatchQuotes(symbols);
-    
+
     if (quotes.length > 0) {
       const updatedHoldings = staticHoldings.map((holding) => {
         const quote = quotes.find(q => q.symbol === holding.symbol);
@@ -59,7 +59,7 @@ export function Holdings() {
         const change = quote?.changePercent || ((currentPrice - holding.avgPrice) / holding.avgPrice) * 100;
         const profitLoss = (currentPrice - holding.avgPrice) * holding.quantity;
         const profitLossPercent = ((currentPrice - holding.avgPrice) / holding.avgPrice) * 100;
-        
+
         return {
           ...holding,
           currentPrice,
@@ -134,17 +134,17 @@ export function Holdings() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button 
+          <Button
             variant={autoRefreshEnabled ? "default" : "outline"}
-            size="sm" 
+            size="sm"
             onClick={toggleAutoRefresh}
             className="text-xs"
           >
             {autoRefreshEnabled ? 'Live' : 'Paused'}
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={fetchStockData}
             disabled={isRefreshing}
           >
@@ -198,15 +198,14 @@ export function Holdings() {
                     </div>
                     <p className="text-sm text-muted-foreground">{holding.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {holding.quantity} shares @ ${holding.currentPrice.toFixed(2)}
+                      {holding.quantity} shares @ ₹{holding.currentPrice.toFixed(2)}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold">${holding.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                  <div className={`flex items-center justify-end gap-1 text-sm ${
-                    holding.change >= 0 ? "text-emerald-400" : "text-red-400"
-                  }`}>
+                  <p className="font-semibold">₹{holding.value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                  <div className={`flex items-center justify-end gap-1 text-sm ${holding.change >= 0 ? "text-emerald-400" : "text-red-400"
+                    }`}>
                     {holding.change >= 0 ? (
                       <TrendingUp className="h-3 w-3" />
                     ) : (
@@ -215,7 +214,7 @@ export function Holdings() {
                     <span>{holding.change >= 0 ? "+" : ""}{holding.change.toFixed(2)}%</span>
                   </div>
                   <p className={`text-xs ${holding.profitLoss >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {holding.profitLoss >= 0 ? '+' : ''}${holding.profitLoss.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {holding.profitLoss >= 0 ? '+' : ''}₹{holding.profitLoss.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                 </div>
                 <Button variant="ghost" size="icon" className="h-8 w-8 ml-2">

@@ -19,58 +19,64 @@ export function BalanceCard() {
   };
 
   return (
-    <Card 
-      variant="glow" 
-      className="p-6 relative overflow-hidden opacity-0 animate-fade-up"
+    <Card
+      className="p-8 relative overflow-hidden opacity-0 animate-fade-up border-none shadow-2xl shadow-primary/20"
       style={{ animationFillMode: 'forwards' }}
     >
-      {/* Background glow effect */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-glow opacity-50" />
-      
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-6">
+      {/* Background patterns */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary via-blue-600 to-indigo-700" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl animate-pulse" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-32 -mb-32 blur-2xl" />
+
+      <div className="relative z-10 text-white">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Total Balance</p>
-            <div className="flex items-center gap-3">
-              <h2 className="text-3xl md:text-4xl font-bold font-display tracking-tight">
+            <p className="text-sm font-bold text-white/70 uppercase tracking-widest mb-1">Total Balance</p>
+            <div className="flex items-center gap-4">
+              <h2 className="text-4xl md:text-5xl font-black font-display tracking-tighter">
                 {showBalance ? formatCurrency(balance) : "₹••••••••"}
               </h2>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8"
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-all"
                 onClick={() => setShowBalance(!showBalance)}
               >
-                {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                {showBalance ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
               </Button>
             </div>
           </div>
-          <div className="text-right hidden sm:block">
-            <span className="text-xs text-muted-foreground">This month</span>
-            <p className="text-success font-semibold">+12.5%</p>
+          <div className="flex flex-col items-end">
+            <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20">
+              <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider block mb-0.5">Growth this month</span>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                <p className="text-lg font-black">+12.5%</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10 border border-success/20">
-            <div className="p-2 rounded-full bg-success/20">
-              <ArrowUpRight className="h-4 w-4 text-success" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/15 transition-all group">
+            <div className="p-3 rounded-xl bg-white/10 group-hover:scale-110 transition-transform">
+              <ArrowUpRight className="h-5 w-5 text-green-300" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Income</p>
-              <p className="font-semibold text-success">
+              <p className="text-[11px] font-bold text-white/60 uppercase tracking-widest">Income</p>
+              <p className="text-xl font-black">
                 {showBalance ? formatCurrency(income) : "₹••••••"}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-            <div className="p-2 rounded-full bg-destructive/20">
-              <ArrowDownRight className="h-4 w-4 text-destructive" />
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-black/10 backdrop-blur-md border border-white/5 hover:bg-black/20 transition-all group">
+            <div className="p-3 rounded-xl bg-white/5 group-hover:scale-110 transition-transform">
+              <ArrowDownRight className="h-5 w-5 text-red-300" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Expenses</p>
-              <p className="font-semibold text-destructive">
+              <p className="text-[11px] font-bold text-white/50 uppercase tracking-widest">Expenses</p>
+              <p className="text-xl font-black">
                 {showBalance ? formatCurrency(expenses) : "₹••••••"}
               </p>
             </div>

@@ -2,107 +2,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, DollarSign, PieChart, BarChart3, Target } from "lucide-react";
-import { useStockData } from "@/hooks/useStockData";
-import { useState, useEffect } from "react";
+import { useInvestments } from "@/hooks/useInvestments";
+import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
-interface HoldingAnalysis {
-  symbol: string;
-  name: string;
-  quantity: number;
-  avgPrice: number;
-  currentPrice: number;
-  value: number;
-  investedValue: number;
-  profitLoss: number;
-  profitLossPercent: number;
-  portfolioWeight: number;
-}
-
-const staticHoldings = [
-  { symbol: "AAPL", name: "Apple Inc.", quantity: 25, avgPrice: 165, type: "stock" },
-  { symbol: "GOOGL", name: "Alphabet Inc.", quantity: 10, avgPrice: 135, type: "stock" },
-  { symbol: "MSFT", name: "Microsoft Corporation", quantity: 15, avgPrice: 340, type: "stock" },
-  { symbol: "NVDA", name: "NVIDIA Corporation", quantity: 8, avgPrice: 450, type: "stock" },
-  { symbol: "AMZN", name: "Amazon.com Inc.", quantity: 12, avgPrice: 155, type: "stock" },
-];
-
 export function PortfolioAnalytics() {
-  const { getBatchQuotes, loading } = useStockData();
-  const [analytics, setAnalytics] = useState<HoldingAnalysis[]>([]);
-  const [totals, setTotals] = useState({
-    totalValue: 0,
-    totalInvested: 0,
-    totalProfitLoss: 0,
-    totalProfitLossPercent: 0,
-    winners: 0,
-    losers: 0,
-  });
+  const { investments, loading } = useInvestments();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const symbols = staticHoldings.map(h => h.symbol);
-      const quotes = await getBatchQuotes(symbols);
+  const { analytics, totals, chartData } = useMemo(() => {
+    let totalValue = 0;
+    let totalInvested = 0;
 
-      let totalValue = 0;
-      let totalInvested = 0;
+    investments.forEach((inv) => {
+      totalValue += inv.currentValue;
+      totalInvested += inv.investedValue;
+    });
 
-      const analysisData = staticHoldings.map((holding) => {
-        const quote = quotes.find(q => q.symbol === holding.symbol);
-        const currentPrice = quote?.price || holding.avgPrice * 1.1;
-        const value = currentPrice * holding.quantity;
-        const investedValue = holding.avgPrice * holding.quantity;
-        const profitLoss = value - investedValue;
-        const profitLossPercent = ((currentPrice - holding.avgPrice) / holding.avgPrice) * 100;
+    const finalAnalysis = investments.map(a => ({
+      ...a,
+      portfolioWeight: totalValue > 0 ? (a.currentValue / totalValue) * 100 : 0,
+    }));
 
-        totalValue += value;
-        totalInvested += investedValue;
+    const winners = finalAnalysis.filter(a => a.profitLoss > 0).length;
+    const losers = finalAnalysis.filter(a => a.profitLoss < 0).length;
 
-        return {
-          symbol: holding.symbol,
-          name: holding.name,
-          quantity: holding.quantity,
-          avgPrice: holding.avgPrice,
-          currentPrice,
-          value,
-          investedValue,
-          profitLoss,
-          profitLossPercent,
-          portfolioWeight: 0,
-        };
-      });
+    const chartData = finalAnalysis.map(a => ({
+      symbol: a.symbol,
+      profitLoss: a.profitLoss,
+      color: a.profitLoss >= 0 ? 'hsl(160, 84%, 39%)' : 'hsl(0, 84%, 60%)',
+    })).sort((a, b) => b.profitLoss - a.profitLoss);
 
-      // Calculate portfolio weights
-      const finalAnalysis = analysisData.map(a => ({
-        ...a,
-        portfolioWeight: (a.value / totalValue) * 100,
-      }));
-
-      const winners = finalAnalysis.filter(a => a.profitLoss > 0).length;
-      const losers = finalAnalysis.filter(a => a.profitLoss < 0).length;
-
-      setAnalytics(finalAnalysis);
-      setTotals({
+    return {
+      analytics: finalAnalysis,
+      totals: {
         totalValue,
         totalInvested,
         totalProfitLoss: totalValue - totalInvested,
-        totalProfitLossPercent: ((totalValue - totalInvested) / totalInvested) * 100,
+        totalProfitLossPercent: totalInvested > 0 ? ((totalValue - totalInvested) / totalInvested) * 100 : 0,
         winners,
         losers,
-      });
+      },
+      chartData
     };
+  }, [investments]);
 
-    fetchData();
-  }, [getBatchQuotes]);
-
-  const chartData = analytics.map(a => ({
-    symbol: a.symbol,
-    profitLoss: a.profitLoss,
-    color: a.profitLoss >= 0 ? 'hsl(160, 84%, 39%)' : 'hsl(0, 84%, 60%)',
-  })).sort((a, b) => b.profitLoss - a.profitLoss);
-
-  if (loading && analytics.length === 0) {
+  if (loading && investments.length === 0) {
     return (
       <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardHeader>
@@ -115,6 +60,22 @@ export function PortfolioAnalytics() {
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-20 w-full" />
           ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!loading && investments.length === 0) {
+    return (
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Portfolio Analytics
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-center py-6">You don't have any investments to analyze yet.</p>
         </CardContent>
       </Card>
     );
@@ -247,7 +208,7 @@ export function PortfolioAnalytics() {
                   </div>
                   <div>
                     <p className="text-muted-foreground text-xs">Current Value</p>
-                    <p className="font-medium">₹{holding.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    <p className="font-medium">₹{holding.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground text-xs">P/L</p>

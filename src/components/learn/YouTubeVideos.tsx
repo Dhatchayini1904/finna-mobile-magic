@@ -72,20 +72,20 @@ export function YouTubeVideos({ onSelectVideo, selectedVideo }: YouTubeVideosPro
   if (selectedVideo) {
     return (
       <div className="space-y-4">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={() => onSelectVideo?.(null as any)}
           className="mb-2"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to videos
         </Button>
-        
+
         <Card className="border-primary/20 bg-card/80 backdrop-blur-sm overflow-hidden">
           <CardContent className="p-0">
             <div className="aspect-video">
               <iframe
-                src={`https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1`}
+                src={`https://www.youtube-nocookie.com/embed/${selectedVideo.id}?autoplay=1`}
                 className="w-full h-full"
                 title={selectedVideo.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -124,26 +124,26 @@ export function YouTubeVideos({ onSelectVideo, selectedVideo }: YouTubeVideosPro
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">Curated Finance Videos</h3>
-        <a 
-          href="https://www.youtube.com/results?search_query=personal+finance+india" 
-          target="_blank" 
+        <a
+          href="https://www.youtube.com/results?search_query=personal+finance+india"
+          target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-primary hover:underline flex items-center gap-1"
         >
           Browse more <ExternalLink className="h-3 w-3" />
         </a>
       </div>
-      
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {youtubeVideos.map((video) => (
-          <Card 
-            key={video.id} 
+          <Card
+            key={video.id}
             className="bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden hover:border-primary/30 transition-all cursor-pointer group"
             onClick={() => onSelectVideo?.(video)}
           >
             <div className="relative aspect-video">
-              <img 
-                src={video.thumbnail} 
+              <img
+                src={video.thumbnail}
                 alt={video.title}
                 className="w-full h-full object-cover"
               />

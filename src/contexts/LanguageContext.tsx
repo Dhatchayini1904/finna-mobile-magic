@@ -20,14 +20,27 @@ const translations: Translations = {
   learn: { en: 'Learn', ta: 'கற்றுக்கொள்' },
   settings: { en: 'Settings', ta: 'அமைப்புகள்' },
   help: { en: 'Help', ta: 'உதவி' },
-  
+  news: { en: 'News', ta: 'செய்திகள்' },
+  aiChat: { en: 'AI Chat', ta: 'AI அரட்டை' },
+  main: { en: 'Main', ta: 'முக்கியமானவை' },
+  tools: { en: 'Tools', ta: 'கருவிகள்' },
+  logout: { en: 'Sign Out', ta: 'வெளியேறு' },
+
   // Common
   welcome: { en: 'Welcome back', ta: 'மீண்டும் வரவேற்கிறோம்' },
+  financialOverview: { en: 'Here\'s your financial overview', ta: 'உங்கள் நிதி கண்ணோட்டம் இதோ' },
   totalBalance: { en: 'Total Balance', ta: 'மொத்த இருப்பு' },
   income: { en: 'Income', ta: 'வருமானம்' },
   expenses: { en: 'Expenses', ta: 'செலவுகள்' },
   savings: { en: 'Savings', ta: 'சேமிப்பு' },
-  
+  searchPlaceholder: { en: 'Search everything...', ta: 'அனைத்தையும் தேடுங்கள்...' },
+  account: { en: 'Account', ta: 'கணக்கு' },
+  premiumAccount: { en: 'Premium Account', ta: 'பிரீமியம் கணக்கு' },
+
+  // Dashboard Stats
+  monthlyBudget: { en: 'Monthly Budget', ta: 'மாத பட்ஜெட்' },
+  creditScore: { en: 'Credit Score', ta: 'கிரெடிட் ஸ்கோர்' },
+  savingsGoal: { en: 'Savings Goal', ta: 'சேமிப்பு இலக்கு' },
   // Investment
   mutualFunds: { en: 'Mutual Funds', ta: 'மியூச்சுவல் ஃபண்டுகள்' },
   sipCalculator: { en: 'SIP Calculator', ta: 'SIP கணிப்பான்' },
@@ -35,25 +48,21 @@ const translations: Translations = {
   rdCalculator: { en: 'RD Calculator', ta: 'RD கணிப்பான்' },
   goldInvestment: { en: 'Gold Investment', ta: 'தங்க முதலீடு' },
   stocks: { en: 'Stocks', ta: 'பங்குகள்' },
-  
-  // Calculator labels
-  monthlyAmount: { en: 'Monthly Investment (₹)', ta: 'மாதாந்திர முதலீடு (₹)' },
-  expectedReturn: { en: 'Expected Return (%)', ta: 'எதிர்பார்க்கப்படும் வருமானம் (%)' },
-  investmentPeriod: { en: 'Investment Period (Years)', ta: 'முதலீட்டு காலம் (ஆண்டுகள்)' },
-  principalAmount: { en: 'Principal Amount (₹)', ta: 'அசல் தொகை (₹)' },
-  interestRate: { en: 'Interest Rate (%)', ta: 'வட்டி விகிதம் (%)' },
-  totalInvestment: { en: 'Total Investment', ta: 'மொத்த முதலீடு' },
-  estimatedReturns: { en: 'Estimated Returns', ta: 'மதிப்பிடப்பட்ட வருமானம்' },
-  totalValue: { en: 'Total Value', ta: 'மொத்த மதிப்பு' },
-  maturityAmount: { en: 'Maturity Amount', ta: 'முதிர்வு தொகை' },
-  calculate: { en: 'Calculate', ta: 'கணக்கிடு' },
-  
+  lumpSum: { en: 'Lump Sum', ta: 'மொத்த முதலீடு' },
+
+  // News
+  marketNews: { en: 'Market News', ta: 'சந்தை செய்திகள்' },
+  syncFeeds: { en: 'Sync Feeds', ta: 'புதுப்பித்தல்' },
+  today: { en: 'Today', ta: 'இன்று' },
+  yesterday: { en: 'Yesterday', ta: 'நேற்று' },
+  readArticle: { en: 'Read Article', ta: 'கட்டுரையைப் படிக்கவும்' },
+
   // AI Chat
   askFinNava: { en: 'Ask FINNAVA', ta: 'FINNAVA-வை கேளுங்கள்' },
   typeMessage: { en: 'Type your message...', ta: 'உங்கள் செய்தியை தட்டச்சு செய்யுங்கள்...' },
   thinking: { en: 'Thinking...', ta: 'யோசிக்கிறது...' },
   speakToMe: { en: 'Speak to me', ta: 'என்னிடம் பேசுங்கள்' },
-  
+
   // Prompts
   howMuchCanISave: { en: 'How much can I save?', ta: 'நான் எவ்வளவு சேமிக்க முடியும்?' },
   bestInvestmentOptions: { en: 'Best investment options', ta: 'சிறந்த முதலீட்டு விருப்பங்கள்' },

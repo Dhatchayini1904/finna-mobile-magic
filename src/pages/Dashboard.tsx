@@ -10,23 +10,29 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 
 export default function Dashboard() {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
   const { profile } = useUserProfile();
 
   const displayName = profile?.full_name || 'there';
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="opacity-0 animate-fade-up" style={{ animationFillMode: 'forwards' }}>
-        <h1 className="text-2xl font-bold font-display">
-          {language === 'ta' ? 'டாஷ்போர்ட்' : 'Dashboard'}
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          {language === 'ta' 
-            ? `வணக்கம், ${displayName}! உங்கள் நிதி கண்ணோட்டம்` 
-            : `Welcome back, ${displayName}! Here's your financial overview.`}
-        </p>
+    <div className="space-y-10 pb-10">
+      {/* Page Header - Enhanced */}
+      <div className="opacity-0 animate-fade-up flex flex-col md:flex-row md:items-end justify-between gap-4" style={{ animationFillMode: 'forwards' }}>
+        <div>
+          <h1 className="text-3xl font-black font-display tracking-tighter text-foreground">
+            {t('dashboard')}
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1 font-medium">
+            {t('welcome')}, <span className="text-primary font-bold">{displayName}</span>! {t('financialOverview')}.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">Live Updates Active</span>
+          </div>
+        </div>
       </div>
 
       {/* Balance & Stats Row */}
@@ -47,7 +53,7 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title={language === 'ta' ? 'மாத பட்ஜெட்' : 'Monthly Budget'}
+          title={t('monthlyBudget')}
           value="₹35,000"
           change="-8.2%"
           changeType="negative"
@@ -56,7 +62,7 @@ export default function Dashboard() {
           delay={100}
         />
         <StatCard
-          title={language === 'ta' ? 'முதலீடுகள்' : 'Investments'}
+          title={t('investments')}
           value="₹1,24,500"
           change="+15.3%"
           changeType="positive"
@@ -65,7 +71,7 @@ export default function Dashboard() {
           delay={150}
         />
         <StatCard
-          title={language === 'ta' ? 'கிரெடிட் ஸ்கோர்' : 'Credit Score'}
+          title={t('creditScore')}
           value="785"
           change="+12 pts"
           changeType="positive"
@@ -74,7 +80,7 @@ export default function Dashboard() {
           delay={200}
         />
         <StatCard
-          title={language === 'ta' ? 'சேமிப்பு இலக்கு' : 'Savings Goal'}
+          title={t('savingsGoal')}
           value="68%"
           change="+5.2%"
           changeType="positive"

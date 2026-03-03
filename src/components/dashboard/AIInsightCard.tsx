@@ -23,58 +23,71 @@ export function AIInsightCard() {
   const generateInsights = (): Insight[] => {
     const insights: Insight[] = [];
 
+    // 1. Emergency Fund Logic
     if (profile?.monthly_income) {
       const income = profile.monthly_income;
-      const recommendedSavings = income * 0.2;
+      const emergencyFundTarget = income * 6;
+      insights.push({
+        type: 'goal',
+        title: language === 'ta' ? 'அவசர நிதி இலக்கு' : 'Emergency Fund Strategy',
+        description: language === 'ta'
+          ? `₹${emergencyFundTarget.toLocaleString('en-IN')} சேமிக்க இலக்கு வைக்கவும். இது 6 மாத பாதுகாப்பு அளிக்கும்.`
+          : `Aim for ₹${emergencyFundTarget.toLocaleString('en-IN')}. This covers 6 months of essential stability.`,
+        action: 'Start Emergency Fund',
+      });
+
+      // 2. Savings Rule (50/30/20)
+      const investmentBudget = income * 0.2;
       insights.push({
         type: 'tip',
-        title: language === 'ta' ? 'சேமிப்பு குறிப்பு' : 'Savings Tip',
-        description: language === 'ta' 
-          ? `உங்கள் வருமானத்தின் 20% சேமிக்க முயற்சிக்கவும் - மாதம் ₹${recommendedSavings.toLocaleString('en-IN')}`
-          : `Try to save 20% of your income - that's ₹${recommendedSavings.toLocaleString('en-IN')}/month`,
-        action: 'Set up auto-save',
+        title: language === 'ta' ? '50/30/20 விதி' : 'The 50/30/20 Rule',
+        description: language === 'ta'
+          ? `மாதம் ₹${investmentBudget.toLocaleString('en-IN')} முதலீடு செய்ய முயற்சிக்கவும்.`
+          : `Try to allocate at least ₹${investmentBudget.toLocaleString('en-IN')} per month for investments.`,
+        action: 'Automate Savings',
       });
     }
 
+    // 3. Risk-Based Portfolio Advice
     if (profile?.risk_profile === 'conservative') {
       insights.push({
         type: 'positive',
-        title: language === 'ta' ? 'பாதுகாப்பான முதலீடுகள்' : 'Safe Investment Options',
+        title: language === 'ta' ? 'குறைந்த ஆபத்து வளர்ச்சி' : 'Low-Risk Growth',
         description: language === 'ta'
-          ? 'FD மற்றும் RD உங்கள் பாதுகாப்பான சுயவிவரத்திற்கு ஏற்றது'
-          : 'FD and RD are great options for your conservative profile',
-        action: 'Explore FD rates',
+          ? 'தற்போதைய சந்தையில் FD மற்றும் தங்கப் பத்திரங்கள் அதிக பாதுகாப்பு தரும்.'
+          : 'In the current market, Sovereign Gold Bonds and FDs offer better stability.',
+        action: 'View Debt Options',
       });
     } else if (profile?.risk_profile === 'aggressive') {
       insights.push({
         type: 'tip',
-        title: language === 'ta' ? 'SIP தொடங்குங்கள்' : 'Start a SIP',
+        title: language === 'ta' ? 'ஈக்விட்டி வாய்ப்பு' : 'Equity Momentum',
         description: language === 'ta'
-          ? 'உங்கள் ரிஸ்க் சுயவிவரத்துடன், ஈக்விட்டி MF-களை கருதுங்கள்'
-          : 'With your risk profile, consider equity mutual funds via SIP',
-        action: 'Calculate SIP returns',
+          ? 'நிஃப்டி 50 இன்டெக்ஸ் ஃபண்டுகளில் முதலீடு செய்வதை பரிசீலிக்கவும்.'
+          : 'Consider allocating to Nifty 50 Index funds for long-term compounding.',
+        action: 'Explore Index Funds',
       });
     }
 
-    if (profile?.financial_goals?.includes('emergency_fund')) {
-      insights.push({
-        type: 'goal',
-        title: language === 'ta' ? 'அவசர நிதி இலக்கு' : 'Emergency Fund Goal',
-        description: language === 'ta'
-          ? '3-6 மாத செலவுகளை சேமிக்க இலக்கு வைக்கவும்'
-          : 'Aim to save 3-6 months of expenses for emergencies',
-        action: 'Create goal',
-      });
-    }
+    // 4. Inflation & Expense Alert
+    insights.push({
+      type: 'warning',
+      title: language === 'ta' ? 'பணவீக்கம் எச்சரிக்கை' : 'Inflation Protection',
+      description: language === 'ta'
+        ? 'பணவீக்கத்தை மிஞ்ச உங்கள் முதலீடுகளில் 60% ஈக்விட்டியில் இருக்க வேண்டும்.'
+        : 'To beat 6% inflation, ensure at least 60% of your long-term wealth is in Equities.',
+      action: 'Check Real Returns',
+    });
 
+    // 5. Tax Saving (Seasonal)
     if (profile?.financial_goals?.includes('save_tax')) {
       insights.push({
         type: 'warning',
-        title: language === 'ta' ? 'வரி சேமிப்பு' : 'Tax Saving Alert',
+        title: language === 'ta' ? 'வரி சேமிப்பு நேரம்' : 'Tax Saving Season',
         description: language === 'ta'
-          ? '80C கீழ் ₹1.5L வரை சேமிக்கலாம். ELSS, PPF போன்றவற்றை பாருங்கள்'
-          : 'You can save up to ₹1.5L under 80C. Consider ELSS, PPF, or NPS',
-        action: 'View options',
+          ? 'ELSS மூலம் வரி சேமிக்க இன்னும் காலம் உள்ளது. ₹1.5L வரை விலக்கு பெறலாம்.'
+          : 'Save up to ₹46,800 in taxes via ELSS (80C). Don\'t wait until March!',
+        action: 'Compare ELSS Funds',
       });
     }
 
@@ -82,11 +95,11 @@ export function AIInsightCard() {
     if (insights.length === 0) {
       insights.push({
         type: 'tip',
-        title: language === 'ta' ? 'FINNAVA உதவிக்குறிப்பு' : 'FINNAVA Tip',
+        title: language === 'ta' ? 'FINNAVA உதவிக்குறிப்பு' : 'Personalization Pending',
         description: language === 'ta'
-          ? 'உங்கள் செலவுகளை தொடர்ந்து பதிவு செய்யுங்கள்'
-          : 'Start tracking your expenses to get personalized insights',
-        action: 'Add transaction',
+          ? 'உங்கள் சுயவிவரத்தை பூர்த்தி செய்து தனிப்பயனாக்கப்பட்ட குறிப்புகளைப் பெறுங்கள்.'
+          : 'Complete your financial profile to get laser-focused AI advice.',
+        action: 'Update Profile',
       });
     }
 
